@@ -79,7 +79,7 @@ class WC_Shortcode_My_Account {
 	}
 
 	/**
-	 * My account page.
+	 * My account page
 	 *
 	 * @param  array $atts
 	 */
@@ -95,7 +95,7 @@ class WC_Shortcode_My_Account {
 	}
 
 	/**
-	 * View order page.
+	 * View order page
 	 *
 	 * @param  int $order_id
 	 */
@@ -121,7 +121,7 @@ class WC_Shortcode_My_Account {
 	}
 
 	/**
-	 * Edit account details page.
+	 * Edit account details page
 	 */
 	private static function edit_account() {
 		wc_get_template( 'myaccount/form-edit-account.php', array( 'user' => get_user_by( 'id', get_current_user_id() ) ) );
@@ -134,7 +134,11 @@ class WC_Shortcode_My_Account {
 	 * @param string $load_address
 	 */
 	private static function edit_address( $load_address = 'billing' ) {
-		$current_user = wp_get_current_user();
+
+		// Current user
+		global $current_user;
+		get_currentuserinfo();
+
 		$load_address = sanitize_key( $load_address );
 
 		$address = WC()->countries->get_address_fields( get_user_meta( get_current_user_id(), $load_address . '_country', true ), $load_address . '_' );
@@ -175,7 +179,7 @@ class WC_Shortcode_My_Account {
 	}
 
 	/**
-	 * Lost password page.
+	 * Lost password page
 	 */
 	public static function lost_password() {
 		// arguments to pass to template
@@ -202,7 +206,7 @@ class WC_Shortcode_My_Account {
 	/**
 	 * Handles sending password retrieval email to customer.
 	 *
-	 * Based on retrieve_password() in core wp-login.php.
+	 * Based on retrieve_password() in core wp-login.php
 	 *
 	 * @access public
 	 * @uses $wpdb WordPress Database object
@@ -211,21 +215,20 @@ class WC_Shortcode_My_Account {
 	public static function retrieve_password() {
 		global $wpdb, $wp_hasher;
 
-		$login = trim( $_POST['user_login'] );
-
-		if ( empty( $login ) ) {
+		if ( empty( $_POST['user_login'] ) ) {
 
 			wc_add_notice( __( 'Enter a username or e-mail address.', 'woocommerce' ), 'error' );
 			return false;
 
 		} else {
 			// Check on username first, as customers can use emails as usernames.
+			$login = trim( $_POST['user_login'] );
 			$user_data = get_user_by( 'login', $login );
 		}
 
 		// If no user found, check if it login is email and lookup user based on email.
-		if ( ! $user_data && is_email( $login ) && apply_filters( 'woocommerce_get_username_from_email', true ) ) {
-			$user_data = get_user_by( 'email', $login );
+		if ( ! $user_data && is_email( $_POST['user_login'] ) && apply_filters( 'woocommerce_get_username_from_email', true ) ) {
+			$user_data = get_user_by( 'email', trim( $_POST['user_login'] ) );
 		}
 
 		do_action( 'lostpassword_post' );
@@ -242,6 +245,7 @@ class WC_Shortcode_My_Account {
 
 		// redefining user_login ensures we return the right case in the email
 		$user_login = $user_data->user_login;
+		$user_email = $user_data->user_email;
 
 		do_action( 'retrieve_password', $user_login );
 
@@ -250,11 +254,13 @@ class WC_Shortcode_My_Account {
 		if ( ! $allow ) {
 
 			wc_add_notice( __( 'Password reset is not allowed for this user', 'woocommerce' ), 'error' );
+
 			return false;
 
 		} elseif ( is_wp_error( $allow ) ) {
 
 			wc_add_notice( $allow->get_error_message(), 'error' );
+
 			return false;
 		}
 
@@ -281,7 +287,7 @@ class WC_Shortcode_My_Account {
 	}
 
 	/**
-	 * Retrieves a user row based on password reset key and login.
+	 * Retrieves a user row based on password reset key and login
 	 *
 	 * @uses $wpdb WordPress Database object
 	 *
@@ -338,7 +344,7 @@ class WC_Shortcode_My_Account {
 	}
 
 	/**
-	 * Show the add payment method page.
+	 * Show the add payment method page
 	 */
 	private static function add_payment_method() {
 
@@ -351,9 +357,14 @@ class WC_Shortcode_My_Account {
 
 			do_action( 'before_woocommerce_add_payment_method' );
 
+			wc_add_notice( __( 'Add a new payment method.', 'woocommerce' ), 'notice'  );
+
 			wc_print_notices();
 
+			// Add payment method form
 			wc_get_template( 'myaccount/form-add-payment-method.php' );
+
+			wc_print_notices();
 
 			do_action( 'after_woocommerce_add_payment_method' );
 

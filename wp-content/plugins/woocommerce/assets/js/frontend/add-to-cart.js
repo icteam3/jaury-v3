@@ -1,9 +1,7 @@
-/*!
- * WooCommerce Add to Cart JS
- */
+/*global wc_add_to_cart_params */
 jQuery( function( $ ) {
 
-	/* global jQuery, wc_add_to_cart_params */
+	// wc_add_to_cart_params is required to continue, ensure the object exists
 	if ( typeof wc_add_to_cart_params === 'undefined' ) {
 		return false;
 	}
@@ -14,7 +12,7 @@ jQuery( function( $ ) {
 		// AJAX add to cart request
 		var $thisbutton = $( this );
 
-		if ( $thisbutton.is( '.ajax_add_to_cart' ) ) {
+		if ( $thisbutton.is( '.product_type_simple' ) ) {
 
 			if ( ! $thisbutton.attr( 'data-product_id' ) ) {
 				return true;

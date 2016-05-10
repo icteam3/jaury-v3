@@ -1703,7 +1703,7 @@ header.site-header.stuck:after{
 /* Footer */
 footer[role="contentinfo"] {
     clear: both;
-    background-color: #3d3d3d;
+    background-color: #ea2b32;
     margin-top: 40px;
     margin-top: 4rem;
     color: #cbcbcb;
@@ -1740,7 +1740,7 @@ footer[role="contentinfo"] .widget-title {
     padding: 0;
 }
 footer[role="contentinfo"] li {
-    color: #cbcbcb;
+    color: #fff;
     padding: 0 0 5px 0;
     padding: 0 0 0.5rem 0;
 }

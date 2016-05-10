@@ -1,9 +1,4 @@
 <?php
-
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
-}
-
 /**
  * WooCommerce Integrations class
  *
@@ -17,11 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class WC_Integrations {
 
-	/**
-	 * Array of integrations.
-	 *
-	 * @var array
-	 */
+	/** Array of integration classes */
 	public $integrations = array();
 
     /**

@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Simplify Commerce Gateway.
+ * Simplify Commerce Gateway
  *
  * @class 		WC_Gateway_Simplify_Commerce
  * @extends		WC_Payment_Gateway
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WC_Gateway_Simplify_Commerce extends WC_Payment_Gateway {
 
 	/**
-	 * Constructor.
+	 * Constructor
 	 */
 	public function __construct() {
 		$this->id                 = 'simplify_commerce';
@@ -62,6 +62,7 @@ class WC_Gateway_Simplify_Commerce extends WC_Payment_Gateway {
 
 		// Hooks
 		add_action( 'wp_enqueue_scripts', array( $this, 'payment_scripts' ) );
+		add_action( 'admin_notices', array( $this, 'checks' ) );
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 		add_action( 'woocommerce_receipt_' . $this->id, array( $this, 'receipt_page' ) );
 		add_action( 'woocommerce_api_wc_gateway_simplify_commerce', array( $this, 'return_handler' ) );
@@ -80,12 +81,12 @@ class WC_Gateway_Simplify_Commerce extends WC_Payment_Gateway {
 	}
 
 	/**
-	 * Admin Panel Options.
-	 * - Options for bits like 'title' and availability on a country-by-country basis.
+	 * Admin Panel Options
+	 * - Options for bits like 'title' and availability on a country-by-country basis
 	 */
 	public function admin_options() {
 		?>
-		<h3><?php _e( 'Simplify Commerce by MasterCard', 'woocommerce' ); ?></h3>
+		<h3><?php _e( 'Simplify Commerce by Mastercard', 'woocommerce' ); ?></h3>
 
 		<?php if ( empty( $this->public_key ) ) : ?>
 			<div class="simplify-commerce-banner updated">
@@ -99,8 +100,6 @@ class WC_Gateway_Simplify_Commerce extends WC_Payment_Gateway {
 		<?php else : ?>
 			<p><?php _e( 'Simplify Commerce is your merchant account and payment gateway all rolled into one. Choose Simplify Commerce as your WooCommerce payment gateway to get access to your money quickly with a powerful, secure payment engine backed by MasterCard.', 'woocommerce' ); ?></p>
 		<?php endif; ?>
-
-		<?php $this->checks(); ?>
 
 		<table class="form-table">
 			<?php $this->generate_settings_html(); ?>
@@ -121,7 +120,7 @@ class WC_Gateway_Simplify_Commerce extends WC_Payment_Gateway {
 				jQuery( '#woocommerce_simplify_commerce_mode' ).on( 'change', function() {
 					var color = jQuery( '#woocommerce_simplify_commerce_modal_color' ).closest( 'tr' );
 
-					if ( 'standard' === jQuery( this ).val() ) {
+					if ( 'standard' == jQuery( this ).val() ) {
 						color.hide();
 					} else {
 						color.show();
@@ -133,7 +132,7 @@ class WC_Gateway_Simplify_Commerce extends WC_Payment_Gateway {
 	}
 
 	/**
-	 * Check if SSL is enabled and notify the user.
+	 * Check if SSL is enabled and notify the user
 	 */
 	public function checks() {
 		if ( 'no' == $this->enabled ) {
@@ -151,22 +150,20 @@ class WC_Gateway_Simplify_Commerce extends WC_Payment_Gateway {
 		}
 
 		// Show message when using standard mode and no SSL on the checkout page
-		elseif ( 'standard' == $this->mode && ! wc_checkout_is_https() ) {
+		elseif ( 'standard' == $this->mode && 'no' == get_option( 'woocommerce_force_ssl_checkout' ) && ! class_exists( 'WordPressHTTPS' ) ) {
 			echo '<div class="error"><p>' . sprintf( __( 'Simplify Commerce is enabled, but the <a href="%s">force SSL option</a> is disabled; your checkout may not be secure! Please enable SSL and ensure your server has a valid SSL certificate - Simplify Commerce will only work in sandbox mode.', 'woocommerce'), admin_url( 'admin.php?page=wc-settings&tab=checkout' ) ) . '</p></div>';
 		}
 	}
 
 	/**
-	 * Check if this gateway is enabled.
-	 *
-	 * @return bool
+	 * Check if this gateway is enabled
 	 */
 	public function is_available() {
-		if ( 'yes' !== $this->enabled ) {
+		if ( 'yes' != $this->enabled ) {
 			return false;
 		}
 
-		if ( 'standard' === $this->mode && 'yes' !== $this->sandbox && ! wc_checkout_is_https() ) {
+		if ( 'standard' == $this->mode && ! is_ssl() && 'yes' != $this->sandbox ) {
 			return false;
 		}
 
@@ -178,7 +175,7 @@ class WC_Gateway_Simplify_Commerce extends WC_Payment_Gateway {
 	}
 
 	/**
-	 * Initialise Gateway Settings Form Fields.
+	 * Initialise Gateway Settings Form Fields
 	 */
 	public function init_form_fields() {
 		$this->form_fields = array(
@@ -200,7 +197,7 @@ class WC_Gateway_Simplify_Commerce extends WC_Payment_Gateway {
 				'title'       => __( 'Description', 'woocommerce' ),
 				'type'        => 'text',
 				'description' => __( 'This controls the description which the user sees during checkout.', 'woocommerce' ),
-				'default'     => 'Pay with your credit card via Simplify Commerce by MasterCard.',
+				'default'     => 'Pay with your credit card via Simplify Commerce by Mastercard.',
 				'desc_tip'    => true
 			),
 			'mode' => array(
@@ -260,7 +257,7 @@ class WC_Gateway_Simplify_Commerce extends WC_Payment_Gateway {
 	}
 
 	/**
-	 * Payment form on checkout page.
+	 * Payment form on checkout page
 	 */
 	public function payment_fields() {
 		$description = $this->get_description();
@@ -279,7 +276,9 @@ class WC_Gateway_Simplify_Commerce extends WC_Payment_Gateway {
 	}
 
 	/**
-	 * Outputs scripts used for simplify payment.
+	 * payment_scripts function.
+	 *
+	 * Outputs scripts used for simplify payment
 	 */
 	public function payment_scripts() {
 		if ( ! is_checkout() || ! $this->is_available() ) {
@@ -302,7 +301,7 @@ class WC_Gateway_Simplify_Commerce extends WC_Payment_Gateway {
 	}
 
 	/**
-	 * Process standard payments.
+	 * Process standard payments
 	 *
 	 * @param  WC_Order $order
 	 * @param  string   $cart_token
@@ -324,11 +323,17 @@ class WC_Gateway_Simplify_Commerce extends WC_Payment_Gateway {
 			}
 
 			$payment = Simplify_Payment::createPayment( array(
-				'amount'              => $order->order_total * 100, // In cents.
+				'amount'              => $order->order_total * 100, // In cents
 				'token'               => $cart_token,
 				'description'         => sprintf( __( '%s - Order #%s', 'woocommerce' ), esc_html( get_bloginfo( 'name', 'display' ) ), $order->get_order_number() ),
 				'currency'            => strtoupper( get_woocommerce_currency() ),
-				'reference'           => $order->id
+				'reference'           => $order->id,
+				'card.addressCity'    => $order->billing_city,
+				'card.addressCountry' => $order->billing_country,
+				'card.addressLine1'   => $order->billing_address_1,
+				'card.addressLine2'   => $order->billing_address_2,
+				'card.addressState'   => $order->billing_state,
+				'card.addressZip'     => $order->billing_postcode
 			) );
 
 			$order_complete = $this->process_order_status( $order, $payment->id, $payment->paymentStatus, $payment->authCode );
@@ -362,7 +367,7 @@ class WC_Gateway_Simplify_Commerce extends WC_Payment_Gateway {
 	}
 
 	/**
-	 * Process standard payments.
+	 * Process standard payments
 	 *
 	 * @param WC_Order $order
 	 * @return array
@@ -375,9 +380,9 @@ class WC_Gateway_Simplify_Commerce extends WC_Payment_Gateway {
 	}
 
 	/**
-	 * Process the payment.
+	 * Process the payment
 	 *
-	 * @param int $order_id
+	 * @param integer $order_id
 	 */
 	public function process_payment( $order_id ) {
 		$cart_token = isset( $_POST['simplify_token'] ) ? wc_clean( $_POST['simplify_token'] ) : '';
@@ -399,26 +404,21 @@ class WC_Gateway_Simplify_Commerce extends WC_Payment_Gateway {
 	 */
 	protected function get_hosted_payments_args( $order ) {
 		$args = apply_filters( 'woocommerce_simplify_commerce_hosted_args', array(
-			'sc-key'          => $this->public_key,
-			'amount'          => $order->order_total * 100,
-			'reference'       => $order->id,
-			'name'            => esc_html( get_bloginfo( 'name', 'display' ) ),
-			'description'     => sprintf( __( 'Order #%s', 'woocommerce' ), $order->get_order_number() ),
-			'receipt'         => 'false',
-			'color'           => $this->modal_color,
-			'redirect-url'    => WC()->api_request_url( 'WC_Gateway_Simplify_Commerce' ),
-			'address'         => $order->billing_address_1 . ' ' . $order->billing_address_2,
-			'address-city'    => $order->billing_city,
-			'address-state'   => $order->billing_state,
-			'address-zip'     => $order->billing_postcode,
-			'address-country' => $order->billing_country
+			'sc-key'       => $this->public_key,
+			'amount'       => $order->order_total * 100,
+			'reference'    => $order->id,
+			'name'         => esc_html( get_bloginfo( 'name', 'display' ) ),
+			'description'  => sprintf( __( 'Order #%s', 'woocommerce' ), $order->get_order_number() ),
+			'receipt'      => 'false',
+			'color'        => $this->modal_color,
+			'redirect-url' => WC()->api_request_url( 'WC_Gateway_Simplify_Commerce' )
 		), $order->id );
 
 		return $args;
 	}
 
 	/**
-	 * Receipt page.
+	 * Receipt page
 	 *
 	 * @param  int $order_id
 	 */
@@ -439,7 +439,7 @@ class WC_Gateway_Simplify_Commerce extends WC_Payment_Gateway {
 	}
 
 	/**
-	 * Return handler for Hosted Payments.
+	 * Return handler for Hosted Payments
 	 */
 	public function return_handler() {
 		@ob_clean();
@@ -467,7 +467,7 @@ class WC_Gateway_Simplify_Commerce extends WC_Payment_Gateway {
 	}
 
 	/**
-	 * Process the order status.
+	 * Process the order status
 	 *
 	 * @param  WC_Order $order
 	 * @param  string   $payment_id
@@ -494,8 +494,8 @@ class WC_Gateway_Simplify_Commerce extends WC_Payment_Gateway {
 	}
 
 	/**
-	 * Process refunds.
-	 * WooCommerce 2.2 or later.
+	 * Process refunds
+	 * WooCommerce 2.2 or later
 	 *
 	 * @param  int $order_id
 	 * @param  float $amount
@@ -509,7 +509,7 @@ class WC_Gateway_Simplify_Commerce extends WC_Payment_Gateway {
 			$payment_id = get_post_meta( $order_id, '_transaction_id', true );
 
 			$refund = Simplify_Refund::createRefund( array(
-				'amount'    => $amount * 100, // In cents.
+				'amount'    => $amount * 100, // In cents
 				'payment'   => $payment_id,
 				'reason'    => $reason,
 				'reference' => $order_id
@@ -535,14 +535,14 @@ class WC_Gateway_Simplify_Commerce extends WC_Payment_Gateway {
 	}
 
 	/**
-	 * Get gateway icon.
+	 * get_icon function.
 	 *
 	 * @access public
 	 * @return string
 	 */
 	public function get_icon() {
 		$icon  = '<img src="' . WC_HTTPS::force_https_url( WC()->plugin_url() . '/assets/images/icons/credit-cards/visa.png' ) . '" alt="Visa" />';
-		$icon .= '<img src="' . WC_HTTPS::force_https_url( WC()->plugin_url() . '/assets/images/icons/credit-cards/mastercard.png' ) . '" alt="MasterCard" />';
+		$icon .= '<img src="' . WC_HTTPS::force_https_url( WC()->plugin_url() . '/assets/images/icons/credit-cards/mastercard.png' ) . '" alt="Mastercard" />';
 		$icon .= '<img src="' . WC_HTTPS::force_https_url( WC()->plugin_url() . '/assets/images/icons/credit-cards/discover.png' ) . '" alt="Discover" />';
 		$icon .= '<img src="' . WC_HTTPS::force_https_url( WC()->plugin_url() . '/assets/images/icons/credit-cards/amex.png' ) . '" alt="Amex" />';
 		$icon .= '<img src="' . WC_HTTPS::force_https_url( WC()->plugin_url() . '/assets/images/icons/credit-cards/jcb.png' ) . '" alt="JCB" />';

@@ -1,9 +1,4 @@
 <?php
-
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
-}
-
 /**
  * Contains Validation functions
  *
@@ -16,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WC_Validation {
 
 	/**
-	 * Validates an email using wordpress native is_email function.
+	 * Validates an email using wordpress native is_email function
 	 *
 	 * @param   string	email address
 	 * @return  bool
@@ -26,7 +21,7 @@ class WC_Validation {
 	}
 
 	/**
-	 * Validates a phone number using a regular expression.
+	 * Validates a phone number using a regular expression
 	 *
 	 * @param   string	phone number
 	 * @return  bool
@@ -40,7 +35,7 @@ class WC_Validation {
 	}
 
 	/**
-	 * Checks for a valid postcode.
+	 * Checks for a valid postcode
 	 *
 	 * @param   string	postcode
 	 * @param	string	country
@@ -57,9 +52,6 @@ class WC_Validation {
 				break;
 			case 'CH' :
 				$valid = (bool) preg_match( '/^([0-9]{4})$/i', $postcode );
-				break;
-			case 'DE' :
-				$valid = (bool) preg_match( '/^([0]{1}[1-9]{1}|[1-9]{1}[0-9]{1})[0-9]{3}$/', $postcode );
 				break;
 			case 'GB' :
 				$valid = self::is_GB_postcode( $postcode );
@@ -136,7 +128,7 @@ class WC_Validation {
 	}
 
 	/**
-	 * Format the postcode according to the country and length of the postcode.
+	 * Format the postcode according to the country and length of the postcode
 	 *
 	 * @param   string	postcode
 	 * @param	string	country
